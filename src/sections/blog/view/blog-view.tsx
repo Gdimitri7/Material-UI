@@ -1,96 +1,87 @@
-import { useState, useCallback } from 'react';
+import "./All.css";
 
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Pagination from '@mui/material/Pagination';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaFileAlt, FaClipboardList, FaKey, FaShieldAlt } from "react-icons/fa";
 
-import { DashboardContent } from 'src/layouts/dashboard';
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
-import { Iconify } from 'src/components/iconify';
-
-import { PostItem } from '../post-item';
-import { PostSort } from '../post-sort';
-import { PostSearch } from '../post-search';
-
-import type { IPostItem } from '../post-item';
+import { DashboardContent } from "src/layouts/dashboard";  
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  posts: IPostItem[];
-};
+export function BlogView() {
+  const navigate = useNavigate();
 
-export function BlogView({ posts }: Props) {
-  const [sortBy, setSortBy] = useState('latest');
+  const initialDocs = [  
+    {
+      title: "Manual da Proteção de Dados",
+      details: "Conteúdo completo do Manual da Proteção de Dados...",
+      icon: <FaFileAlt className="document-icon" />,
+      route: "/documents/manual",
+    },
+    {
+      title: "Código de Conduta",
+      details: "Detalhes completos do Código de Conduta...",
+      icon: <FaClipboardList className="document-icon" />,
+      route: "/documents/conduct",
+    },
+    {
+      title: "Política de Proteção de Dados",
+      details: "Política detalhada sobre proteção de dados...",
+      icon: <FaShieldAlt className="document-icon" />,
+      route: "/documents/policy",
+    },
+    {
+      title: "Gestão de Acessos",
+      details: "Informações completas sobre gestão de acessos...",
+      icon: <FaKey className="document-icon" />,
+      route: "/documents/manager",
+    },
+  ];
 
-  const handleSort = useCallback((newSort: string) => {
-    setSortBy(newSort);
-  }, []);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  const toggleExpand = (index: number, route?: string) => {
+    if (route) {
+      navigate(route);
+    } else {
+      setExpandedIndex(expandedIndex === index ? null : index);
+    }
+  };
 
   return (
     <DashboardContent>
-      <Box
-        sx={{
-          mb: 5,
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
+      <Box sx={{ mb: 5, display: "flex", alignItems: "center" }}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          Blog
+          Todos os Documentos de Proteção de Dados
         </Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        >
-          New post
-        </Button>
       </Box>
 
-      <Box
-        sx={{
-          mb: 5,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <PostSearch posts={posts} />
-        <PostSort
-          sortBy={sortBy}
-          onSort={handleSort}
-          options={[
-            { value: 'latest', label: 'Latest' },
-            { value: 'popular', label: 'Popular' },
-            { value: 'oldest', label: 'Oldest' },
-          ]}
-        />
-      </Box>
-
-      <Grid container spacing={3}>
-        {posts.map((post, index) => {
-          const latestPostLarge = index === 0;
-          const latestPost = index === 1 || index === 2;
-
-          return (
-            <Grid
-              key={post.id}
-              size={{
-                xs: 12,
-                sm: latestPostLarge ? 12 : 6,
-                md: latestPostLarge ? 6 : 3,
-              }}
-            >
-              <PostItem post={post} latestPost={latestPost} latestPostLarge={latestPostLarge} />
-            </Grid>
-          );
-        })}
-      </Grid>
-
-      <Pagination count={10} color="primary" sx={{ mt: 8, mx: 'auto' }} />
+      <div className="cards-grid">
+        {initialDocs.map((doc, index) => (
+          <div
+            key={index}
+            className={`document-card ${expandedIndex === index ? "expanded" : ""}`}
+          >
+            {doc.icon}
+            <div className="document-content">
+              <h2 className="document-title">{doc.title}</h2>
+              <div className="document-details">{doc.details}</div>
+            </div>
+            <div className="document-action">
+              <button onClick={() => toggleExpand(index, doc.route)}>
+                {doc.route
+                  ? "Ler / Aceitar"
+                  : expandedIndex === index
+                  ? "Fechar"
+                  : "Ler / Aceitar"}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </DashboardContent>
   );
 }

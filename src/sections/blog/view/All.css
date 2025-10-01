@@ -1,0 +1,72 @@
+.cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.document-card {
+  background-color: #ffffff; /* fundo branco padrão dos cards */
+  border-radius: 12px;       /* bordas arredondadas iguais ao Minimals */
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1); /* sombra sutil do Minimals */
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  color: #031634; /* cor de texto padrão */
+}
+
+.document-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.15);
+}
+
+.document-icon {
+  font-size: 2.5rem;
+  color: #2960B0; /* azul padrão Minimals */
+  flex-shrink: 0;
+}
+
+.document-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.document-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.document-details {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 8px;
+  display: none;
+}
+
+.document-card.expanded .document-details {
+  display: block;
+}
+
+.document-action {
+  margin-left: auto;
+}
+
+.document-action button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2960B0; /* azul padrão Minimals */
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.document-action button:hover {
+  background-color: #1f4d91;
+}
