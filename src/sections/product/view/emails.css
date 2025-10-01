@@ -1,0 +1,105 @@
+/* Emails.css */
+
+/* Container principal da página */
+.emails-container {
+  padding: 30px;
+  min-height: 100vh;
+  background-color: #f4f6f8; /* fundo claro estilo dashboard */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #031634; /* cor do texto escura */
+  gap: 20px;
+}
+
+/* Cabeçalho */
+.emails-header {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00327D; /* azul escuro tipo cards */
+}
+
+/* Linha divisória */
+.emails-divider {
+  width: 100%;
+  max-width: 1200px;
+  border: 0;
+  border-top: 2px solid #00327D;
+  margin-bottom: 20px;
+}
+
+/* Lista de emails */
+.emails-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Card individual do email */
+.email-card {
+  background-color: #fff; /* branco estilo card */
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  color: #031634;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* Linha dentro do card */
+.email-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+/* Label e valor */
+.email-label {
+  flex: 1;
+}
+.email-value {
+  flex: 2;
+  text-align: left;
+}
+
+/* Linha de checkboxes */
+.checkboxes-row {
+  display: flex;
+  gap: 15px;
+}
+.checkboxes-row label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: normal;
+}
+
+/* Botão de reenviar */
+.send-email-btn {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  background-color: #2960B0; /* azul tipo cards */
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.2s ease;
+}
+.send-email-btn:hover {
+  background-color: #4490E0;
+}
+
+/* Responsividade simples */
+@media (max-width: 768px) {
+  .email-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .checkboxes-row {
+    flex-direction: column;
+  }
+}

@@ -1,152 +1,87 @@
-import { useState, useCallback } from 'react';
+import "../view/emails.css";
 
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Pagination from '@mui/material/Pagination';
-import Typography from '@mui/material/Typography';
+// 2. external imports
+import { useState } from "react";
 
-import { _products } from 'src/_mock';
-import { DashboardContent } from 'src/layouts/dashboard';
+// 3. internal imports
+import { DashboardContent } from "src/layouts/dashboard";
 
-import { ProductItem } from '../product-item';
-import { ProductSort } from '../product-sort';
-import { CartIcon } from '../product-cart-widget';
-import { ProductFilters } from '../product-filters';
+export function EmailsView() {
+  const [emails, setEmails] = useState([
+    { id: 1, usuario: "Gustavo Silva", email: "gustavo@gmail.com", lido: true, entregue: true, aceite: false },
+    { id: 2, usuario: "Maria Oliveira", email: "maria@gmail.com", lido: true, entregue: false, aceite: true },
+    { id: 3, usuario: "João Pereira", email: "joao@gmail.com", lido: false, entregue: false, aceite: false },
+    { id: 4, usuario: "Ana Costa", email: "ana@gmail.com", lido: true, entregue: true, aceite: true },
+    { id: 5, usuario: "Pedro Lima", email: "pedro@gmail.com", lido: false, entregue: true, aceite: false },
+  ]);
 
-import type { FiltersProps } from '../product-filters';
+  const toggleCheckbox = (id: number, field: "lido" | "entregue" | "aceite") => {
+    setEmails(prev => prev.map(e => (e.id === id ? { ...e, [field]: !e[field] } : e)));
+  };
 
-// ----------------------------------------------------------------------
+  const handleResend = (email: string) => {
+    alert(`Email reenviado para: ${email}`);
+  };
 
-const GENDER_OPTIONS = [
-  { value: 'men', label: 'Men' },
-  { value: 'women', label: 'Women' },
-  { value: 'kids', label: 'Kids' },
-];
+  // paginação simples
+  const rowsPerPage = 5;
+  const [page, setPage] = useState(0);
+  const displayedEmails = emails.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 
-const CATEGORY_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'shose', label: 'Shose' },
-  { value: 'apparel', label: 'Apparel' },
-  { value: 'accessories', label: 'Accessories' },
-];
-
-const RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
-
-const PRICE_OPTIONS = [
-  { value: 'below', label: 'Below $25' },
-  { value: 'between', label: 'Between $25 - $75' },
-  { value: 'above', label: 'Above $75' },
-];
-
-const COLOR_OPTIONS = [
-  '#00AB55',
-  '#000000',
-  '#FFFFFF',
-  '#FFC0CB',
-  '#FF4842',
-  '#1890FF',
-  '#94D82D',
-  '#FFC107',
-];
-
-const defaultFilters = {
-  price: '',
-  gender: [GENDER_OPTIONS[0].value],
-  colors: [COLOR_OPTIONS[4]],
-  rating: RATING_OPTIONS[0],
-  category: CATEGORY_OPTIONS[0].value,
-};
-
-export function ProductsView() {
-  const [sortBy, setSortBy] = useState('featured');
-
-  const [openFilter, setOpenFilter] = useState(false);
-
-  const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
-
-  const handleOpenFilter = useCallback(() => {
-    setOpenFilter(true);
-  }, []);
-
-  const handleCloseFilter = useCallback(() => {
-    setOpenFilter(false);
-  }, []);
-
-  const handleSort = useCallback((newSort: string) => {
-    setSortBy(newSort);
-  }, []);
-
-  const handleSetFilters = useCallback((updateState: Partial<FiltersProps>) => {
-    setFilters((prevValue) => ({ ...prevValue, ...updateState }));
-  }, []);
-
-  const canReset = Object.keys(filters).some(
-    (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
-  );
+  const handleChangePage = (direction: "next" | "prev") => {
+    if (direction === "next" && (page + 1) * rowsPerPage < emails.length) setPage(page + 1);
+    if (direction === "prev" && page > 0) setPage(page - 1);
+  };
 
   return (
     <DashboardContent>
-      <CartIcon totalItems={8} />
+      <h1 className="emails-header">Emails Enviados pelo Sistema</h1>
+      <hr className="emails-divider" />
 
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Products
-      </Typography>
-      <Box
-        sx={{
-          mb: 5,
-          display: 'flex',
-          alignItems: 'center',
-          flexWrap: 'wrap-reverse',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <Box
-          sx={{
-            my: 1,
-            gap: 1,
-            flexShrink: 0,
-            display: 'flex',
-          }}
-        >
-          <ProductFilters
-            canReset={canReset}
-            filters={filters}
-            onSetFilters={handleSetFilters}
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-            onResetFilter={() => setFilters(defaultFilters)}
-            options={{
-              genders: GENDER_OPTIONS,
-              categories: CATEGORY_OPTIONS,
-              ratings: RATING_OPTIONS,
-              price: PRICE_OPTIONS,
-              colors: COLOR_OPTIONS,
-            }}
-          />
+      <div className="emails-list">
+        <table className="emails-table">
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>Email</th>
+              <th>Entregue</th>
+              <th>Lido</th>
+              <th>Aceito</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedEmails.map(e => (
+              <tr key={e.id}>
+                <td>{e.usuario}</td>
+                <td>{e.email}</td>
+                <td className="checkbox-center">
+                  <input type="checkbox" checked={e.entregue} onChange={() => toggleCheckbox(e.id, "entregue")} />
+                </td>
+                <td className="checkbox-center">
+                  <input type="checkbox" checked={e.lido} onChange={() => toggleCheckbox(e.id, "lido")} />
+                </td>
+                <td className="checkbox-center">
+                  <input type="checkbox" checked={e.aceite} onChange={() => toggleCheckbox(e.id, "aceite")} />
+                </td>
+                <td className="actions-cell">
+                  <button className="send-email-btn" onClick={() => handleResend(e.email)}>
+                    Reenviar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-          <ProductSort
-            sortBy={sortBy}
-            onSort={handleSort}
-            options={[
-              { value: 'featured', label: 'Featured' },
-              { value: 'newest', label: 'Newest' },
-              { value: 'priceDesc', label: 'Price: High-Low' },
-              { value: 'priceAsc', label: 'Price: Low-High' },
-            ]}
-          />
-        </Box>
-      </Box>
-
-      <Grid container spacing={3}>
-        {_products.map((product) => (
-          <Grid key={product.id} size={{ xs: 12, sm: 6, md: 3 }}>
-            <ProductItem product={product} />
-          </Grid>
-        ))}
-      </Grid>
-
-      <Pagination count={10} color="primary" sx={{ mt: 8, mx: 'auto' }} />
+        {/* Paginação simples */}
+        <div style={{ marginTop: "15px", display: "flex", justifyContent: "space-between" }}>
+          <button className="send-email-btn" onClick={() => handleChangePage("prev")}>Anterior</button>
+          <button className="send-email-btn" onClick={() => handleChangePage("next")}>Próximo</button>
+        </div>
+      </div>
     </DashboardContent>
   );
 }
+
+export default EmailsView;
