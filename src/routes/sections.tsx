@@ -12,12 +12,21 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 // ----------------------------------------------------------------------
 
+// Lazy load das páginas
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+
+// Lazy load dos documentos dentro de Blog
+export const Manual = lazy(() => import('src/sections/blog/manual'));
+export const Conduct = lazy(() => import('src/sections/blog/conduct'));
+export const Policy = lazy(() => import('src/sections/blog/policy'));
+export const Manager = lazy(() => import('src/sections/blog/manager'));
+
+// ----------------------------------------------------------------------
 
 const renderFallback = () => (
   <Box
@@ -53,6 +62,10 @@ export const routesSection: RouteObject[] = [
       { path: 'user', element: <UserPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'blog', element: <BlogPage /> },
+      { path: 'blog/manual', element: <Manual /> },
+      { path: 'blog/conduct', element: <Conduct /> },
+      { path: 'blog/policy', element: <Policy /> },
+      { path: 'blog/manager', element: <Manager /> },
     ],
   },
   {

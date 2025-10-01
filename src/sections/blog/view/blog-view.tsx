@@ -19,25 +19,25 @@ export function BlogView() {
       title: "Manual da Proteção de Dados",
       details: "Conteúdo completo do Manual da Proteção de Dados...",
       icon: <FaFileAlt className="document-icon" />,
-      route: "/documents/manual",
+      route: "/blog/manual",
     },
     {
       title: "Código de Conduta",
       details: "Detalhes completos do Código de Conduta...",
       icon: <FaClipboardList className="document-icon" />,
-      route: "/documents/conduct",
+      route: "/blog/conduct",
     },
     {
       title: "Política de Proteção de Dados",
       details: "Política detalhada sobre proteção de dados...",
       icon: <FaShieldAlt className="document-icon" />,
-      route: "/documents/policy",
+      route: "/blog/policy",
     },
     {
       title: "Gestão de Acessos",
       details: "Informações completas sobre gestão de acessos...",
       icon: <FaKey className="document-icon" />,
-      route: "/documents/manager",
+      route: "/blog/manager",
     },
   ];
 
