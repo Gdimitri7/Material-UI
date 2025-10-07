@@ -53,35 +53,41 @@ export default function Manual() {
         </Worker>
       </div>
 
-      {/* Botões Aceitar / Cancelar */}
-      <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-        <button
-          style={{
-            backgroundColor: "#2960B0",
-            color: "#fff",
-            border: "none",
-            padding: "8px 16px",
-            cursor: "pointer",
-            borderRadius: 4,
-          }}
-          onClick={() => alert("Você aceitou o documento!")}
-        >
-          Aceitar
-        </button>
-        <button
-          style={{
-            backgroundColor: "#fff",
-            color: "#2960B0",
-            border: "1px solid #2960B0",
-            padding: "8px 16px",
-            cursor: "pointer",
-            borderRadius: 4,
-          }}
-          onClick={() => navigate(-1)}
-        >
-          Cancelar
-        </button>
-      </div>
+       {/* Botões Aceitar / Cancelar */}
+      <div style={{ 
+  marginTop: 16, 
+  display: "flex", 
+  gap: 8, 
+  justifyContent: "flex-end" // adiciona isso
+}}>
+  <button
+    style={{
+      backgroundColor: "#fff",
+      color: "#2960B0",
+      border: "1px solid #2960B0",
+      padding: "8px 16px",
+      cursor: "pointer",
+      borderRadius: 4,
+    }}
+    onClick={() => navigate(-1)}
+  >
+    Cancelar
+  </button>
+  <button
+    style={{
+      backgroundColor: "#2960B0",
+      color: "#fff",
+      border: "none",
+      padding: "8px 16px",
+      cursor: "pointer",
+      borderRadius: 4,
+    }}
+    onClick={() => alert("Você aceitou o documento!")}
+  >
+    Aceitar
+  </button>
+  
+</div>
     </DashboardContent>
   );
 }

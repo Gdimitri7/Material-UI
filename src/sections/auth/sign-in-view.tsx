@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios';
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -9,9 +10,13 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useRouter } from 'src/routes/hooks';
+import { useRouter } from 'src/routes/hooks'; // rotas internas
 
-import { Iconify } from 'src/components/iconify';
+import api from 'src/services/api'; // serviços internos
+
+import { Iconify } from 'src/components/iconify'; // componentes internos
+ // componentes internos
+
 
 // ----------------------------------------------------------------------
 
@@ -19,10 +24,38 @@ export function SignInView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("hello@gmail.com");
+  const [password, setPassword] = useState("@demo1234");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  const handleSignIn = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const response = await api.post("/auth/login", {
+        username: email,
+        password,
+      });
+
+      const token = response.data.token;
+
+      localStorage.setItem("token", token);
+
+      router.push("/");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        console.error("Erro no login (Axios):", err.response?.data || err.message);
+      } else if (err instanceof Error) {
+        console.error("Erro no login:", err.message);
+      } else {
+        console.error("Erro desconhecido no login:", err);
+      }
+
+      alert("Login falhou. Verifique usuário e senha.");
+    } finally {
+      setLoading(false);
+    }
+  }, [email, password, router]);
 
   const renderForm = (
     <Box
@@ -36,7 +69,8 @@ export function SignInView() {
         fullWidth
         name="email"
         label="Email address"
-        defaultValue="hello@gmail.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         sx={{ mb: 3 }}
         slotProps={{
           inputLabel: { shrink: true },
@@ -51,7 +85,8 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Password"
-        defaultValue="@demo1234"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         type={showPassword ? 'text' : 'password'}
         slotProps={{
           inputLabel: { shrink: true },
@@ -75,8 +110,9 @@ export function SignInView() {
         color="inherit"
         variant="contained"
         onClick={handleSignIn}
+        disabled={loading}
       >
-        Sign in
+        {loading ? "Signing in..." : "Sign in"}
       </Button>
     </Box>
   );
@@ -95,9 +131,7 @@ export function SignInView() {
         <Typography variant="h5">Sign in</Typography>
         <Typography
           variant="body2"
-          sx={{
-            color: 'text.secondary',
-          }}
+          sx={{ color: 'text.secondary' }}
         >
           Don’t have an account?
           <Link variant="subtitle2" sx={{ ml: 0.5 }}>

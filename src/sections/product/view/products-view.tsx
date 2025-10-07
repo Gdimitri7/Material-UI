@@ -1,85 +1,176 @@
-import "../view/emails.css";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
-// 2. external imports
-import { useState } from "react";
+// MUI
+import {
+  Box,
+  Card,
+  Table,
+  Button,
+  TableBody,
+  Typography,
+  TableContainer,
+  TablePagination,
+  TableRow,
+  TableCell,
+  Checkbox,
+  TableHead,
+  TextField,
+} from "@mui/material";
 
-// 3. internal imports
+// Layout
 import { DashboardContent } from "src/layouts/dashboard";
 
-export function EmailsView() {
-  const [emails, setEmails] = useState([
-    { id: 1, usuario: "Gustavo Silva", email: "gustavo@gmail.com", lido: true, entregue: true, aceite: false },
-    { id: 2, usuario: "Maria Oliveira", email: "maria@gmail.com", lido: true, entregue: false, aceite: true },
-    { id: 3, usuario: "João Pereira", email: "joao@gmail.com", lido: false, entregue: false, aceite: false },
-    { id: 4, usuario: "Ana Costa", email: "ana@gmail.com", lido: true, entregue: true, aceite: true },
-    { id: 5, usuario: "Pedro Lima", email: "pedro@gmail.com", lido: false, entregue: true, aceite: false },
-  ]);
+// ----------------------------------------------------------------------
 
-  const toggleCheckbox = (id: number, field: "lido" | "entregue" | "aceite") => {
-    setEmails(prev => prev.map(e => (e.id === id ? { ...e, [field]: !e[field] } : e)));
+type EmailProps = {
+  id: number;
+  username: string;
+  email: string;
+  entregue?: boolean; // opcional, se você não tiver esses campos no backend
+  lido?: boolean;
+  aceite?: boolean;
+};
+
+// ----------------------------------------------------------------------
+
+export function EmailsView() {
+  const [emails, setEmails] = useState<EmailProps[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [filterName, setFilterName] = useState("");
+
+  // 🔹 Buscar usuários do backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      
+      try {
+        const token = localStorage.getItem("token"); // se usar JWT
+        const response = await axios.get("http://localhost:4000/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setEmails(response.data);
+      } catch (err) {
+        console.error("Erro ao buscar usuários:", err);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // filtro
+  const filteredEmails = emails.filter(
+    (e) =>
+      e.username.toLowerCase().includes(filterName.toLowerCase()) ||
+      e.email.toLowerCase().includes(filterName.toLowerCase())
+  );
+
+  const handleToggle = (id: number, field: keyof EmailProps) => {
+    setEmails((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, [field]: !e[field] } : e))
+    );
   };
 
   const handleResend = (email: string) => {
     alert(`Email reenviado para: ${email}`);
   };
 
-  // paginação simples
-  const rowsPerPage = 5;
-  const [page, setPage] = useState(0);
-  const displayedEmails = emails.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-
-  const handleChangePage = (direction: "next" | "prev") => {
-    if (direction === "next" && (page + 1) * rowsPerPage < emails.length) setPage(page + 1);
-    if (direction === "prev" && page > 0) setPage(page - 1);
-  };
-
   return (
     <DashboardContent>
-      <h1 className="emails-header">Emails Enviados pelo Sistema</h1>
-      <hr className="emails-divider" />
+      <Box sx={{ mb: 5, display: "flex", alignItems: "center" }}>
+        <Typography variant="h4" sx={{ flexGrow: 1, color: "#031634" }}>
+          Emails Enviados pelo Sistema
+        </Typography>
+      </Box>
 
-      <div className="emails-list">
-        <table className="emails-table">
-          <thead>
-            <tr>
-              <th>Usuário</th>
-              <th>Email</th>
-              <th>Entregue</th>
-              <th>Lido</th>
-              <th>Aceito</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayedEmails.map(e => (
-              <tr key={e.id}>
-                <td>{e.usuario}</td>
-                <td>{e.email}</td>
-                <td className="checkbox-center">
-                  <input type="checkbox" checked={e.entregue} onChange={() => toggleCheckbox(e.id, "entregue")} />
-                </td>
-                <td className="checkbox-center">
-                  <input type="checkbox" checked={e.lido} onChange={() => toggleCheckbox(e.id, "lido")} />
-                </td>
-                <td className="checkbox-center">
-                  <input type="checkbox" checked={e.aceite} onChange={() => toggleCheckbox(e.id, "aceite")} />
-                </td>
-                <td className="actions-cell">
-                  <button className="send-email-btn" onClick={() => handleResend(e.email)}>
-                    Reenviar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <Card>
+        {/* Barra de pesquisa */}
+        <Box sx={{ p: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Pesquisar por usuário ou email..."
+            value={filterName}
+            onChange={(e) => setFilterName(e.target.value)}
+          />
+        </Box>
 
-        {/* Paginação simples */}
-        <div style={{ marginTop: "15px", display: "flex", justifyContent: "space-between" }}>
-          <button className="send-email-btn" onClick={() => handleChangePage("prev")}>Anterior</button>
-          <button className="send-email-btn" onClick={() => handleChangePage("next")}>Próximo</button>
-        </div>
-      </div>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Usuário</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Entregue</TableCell>
+                <TableCell>Lido</TableCell>
+                <TableCell>Aceito</TableCell>
+                <TableCell>Ações</TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {filteredEmails
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((e) => (
+                  <TableRow key={e.id} hover>
+                    <TableCell>{e.username}</TableCell>
+                    <TableCell>{e.email}</TableCell>
+                    <TableCell>
+                      <Checkbox
+                        checked={e.entregue || false}
+                        onChange={() => handleToggle(e.id, "entregue")}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox
+                        checked={e.lido || false}
+                        onChange={() => handleToggle(e.id, "lido")}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox
+                        checked={e.aceite || false}
+                        onChange={() => handleToggle(e.id, "aceite")}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => handleResend(e.email)}
+                      >
+                        Reenviar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {filteredEmails.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    Nenhum resultado encontrado.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Paginação */}
+        <TablePagination
+          component="div"
+          page={page}
+          count={filteredEmails.length}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          rowsPerPageOptions={[5, 10, 25]}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+        />
+      </Card>
     </DashboardContent>
   );
 }

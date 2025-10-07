@@ -26,6 +26,8 @@ export const Conduct = lazy(() => import('src/sections/blog/conduct'));
 export const Policy = lazy(() => import('src/sections/blog/policy'));
 export const Manager = lazy(() => import('src/sections/blog/manager'));
 
+export const CreateUser = lazy(() => import('src/sections/user/createUser'))
+
 // ----------------------------------------------------------------------
 
 const renderFallback = () => (
@@ -66,6 +68,8 @@ export const routesSection: RouteObject[] = [
       { path: 'blog/conduct', element: <Conduct /> },
       { path: 'blog/policy', element: <Policy /> },
       { path: 'blog/manager', element: <Manager /> },
+      { path: 'user/createUser', element: <CreateUser /> },
+
     ],
   },
   {

@@ -73,10 +73,10 @@ export function BlogView() {
             <div className="document-action">
               <button onClick={() => toggleExpand(index, doc.route)}>
                 {doc.route
-                  ? "Ler / Aceitar"
+                  ? "Acessar"
                   : expandedIndex === index
                   ? "Fechar"
-                  : "Ler / Aceitar"}
+                  : "Ler Mais"}
               </button>
             </div>
           </div>
