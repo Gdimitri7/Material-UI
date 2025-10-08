@@ -25,7 +25,7 @@
 
 .document-icon {
   font-size: 2.5rem;
-  color: #2960B0; /* azul padrão Minimals */
+  color: #031634; /* azul padrão Minimals */
   flex-shrink: 0;
 }
 
@@ -60,7 +60,7 @@
   padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #2960B0; /* azul padrão Minimals */
+  background-color: #031634; /* azul padrão Minimals */
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
