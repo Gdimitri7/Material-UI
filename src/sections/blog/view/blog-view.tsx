@@ -1,6 +1,5 @@
 import "./All.css";
 
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { FaFileAlt, FaPlus } from "react-icons/fa";
@@ -14,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
+import api from "src/services/api"; // Axios com interceptors já configurado
 import { DashboardContent } from "src/layouts/dashboard";
 
 interface DocumentType {
@@ -31,8 +31,11 @@ interface UserType {
 
 export function BlogView() {
   const navigate = useNavigate();
-  const userId = Number(localStorage.getItem("userId"));
-  const token = localStorage.getItem("token");
+
+  // Pega o usuário logado do localStorage
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const userId = user?.id || null;
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -47,13 +50,13 @@ export function BlogView() {
     recipients: [] as number[],
   });
 
-  // ----------- Fetch documents e usuários -----------
+  // ---------------- Fetch documents e usuários ----------------
   useEffect(() => {
+    if (!userId) return; // garante que usuário existe
+
     const fetchDocuments = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/documents", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/documents");
         const myDocs = res.data.filter(
           (doc: DocumentType) =>
             !doc.recipients?.length || doc.recipients.includes(userId)
@@ -66,9 +69,7 @@ export function BlogView() {
 
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/users");
         setAllUsers(res.data);
       } catch (err) {
         console.error("Erro ao buscar usuários:", err);
@@ -77,9 +78,9 @@ export function BlogView() {
 
     fetchDocuments();
     fetchUsers();
-  }, [token, userId]);
+  }, [userId]);
 
-  // ----------- Handlers -----------
+  // ---------------- Handlers ----------------
   const toggleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
@@ -116,14 +117,12 @@ export function BlogView() {
       formData.append("file", newDoc.file);
       formData.append("recipients", JSON.stringify(newDoc.recipients));
 
-      const res = await axios.post("http://localhost:4000/documents", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await api.post("/documents", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setDocs([...docs, res.data]);
+      // Adiciona o documento recém-criado no topo
+      setDocs([res.data, ...docs]);
       setNewDoc({ title: "", details: "", file: null, recipients: [] });
       handleCloseModal();
     } catch (err) {
@@ -132,7 +131,7 @@ export function BlogView() {
     }
   };
 
-  // ----------- JSX -----------
+  // ---------------- JSX ----------------
   return (
     <DashboardContent>
       <Box

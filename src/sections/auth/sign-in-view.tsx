@@ -28,34 +28,42 @@ export function SignInView() {
   const [password, setPassword] = useState("@demo1234");
   const [loading, setLoading] = useState(false);
 
-  const handleSignIn = useCallback(async () => {
-    try {
-      setLoading(true);
+const handleSignIn = useCallback(async () => {
+  try {
+    setLoading(true);
 
-      const response = await api.post("/auth/login", {
-        username: email,
-        password,
-      });
+    const response = await api.post("/auth/login", {
+      username: email, // ou mude para "username" se o backend usar
+      password,
+    });
 
-      const token = response.data.token;
+    // token do backend
+    const token = response.data.token;
 
-      localStorage.setItem("token", token);
+    // usuário completo do backend
+    const user = response.data.user;
 
-      router.push("/");
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        console.error("Erro no login (Axios):", err.response?.data || err.message);
-      } else if (err instanceof Error) {
-        console.error("Erro no login:", err.message);
-      } else {
-        console.error("Erro desconhecido no login:", err);
-      }
+    // salva no localStorage
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
 
-      alert("Login falhou. Verifique usuário e senha.");
-    } finally {
-      setLoading(false);
+    // redireciona para dashboard
+    router.push("/");
+  } catch (err: unknown) {
+    if (err instanceof AxiosError) {
+      console.error("Erro no login (Axios):", err.response?.data || err.message);
+    } else if (err instanceof Error) {
+      console.error("Erro no login:", err.message);
+    } else {
+      console.error("Erro desconhecido no login:", err);
     }
-  }, [email, password, router]);
+
+    alert("Login falhou. Verifique usuário e senha.");
+  } finally {
+    setLoading(false);
+  }
+}, [email, password, router]);
+
 
   const renderForm = (
     <Box
